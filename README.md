@@ -45,6 +45,26 @@ This ensures:
 - Minimal high-impact guardrails
 - Cost-aware implementation
 
+## Security Validation Scenarios
+
+To validate the effectiveness of OrgShield controls, the following scenarios were tested:
+
+### 1. Attempted Organization Exit
+Test: Attempted to leave the AWS Organization from a member account.
+Result: Blocked by SCP (organizations:LeaveOrganization denied).
+
+### 2. CloudTrail Tampering Attempt
+Test: Attempted to stop CloudTrail logging.
+Result: Denied by SCP (cloudtrail:StopLogging).
+
+### 3. Public S3 Exposure Test
+Test: Created an S3 bucket with public access.
+Result: Flagged by AWS Config managed rules.
+
+### 4. Threat Detection Simulation
+Test: Triggered GuardDuty finding via suspicious activity simulation.
+Result: Finding centralized in Security account via delegated administrator model.
+
 ## Diagram
 ![Architecture Diagram](architecture.png)
 
