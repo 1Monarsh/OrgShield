@@ -1,24 +1,24 @@
 # OrgShield
 
 ## Overview
-Designed and implemented a production-grade AWS multi-account security architecture using AWS Organizations, centralized identity, logging, threat detection, and foundational guardrails.
+OrgShield is a production-grade AWS multi-account security baseline that I designed and implemented to secure the control plane before deploying workloads.
+The goal was simple: establish governance, logging, detection, and validation first — then think about infrastructure.
 
 ## Architecture
 
 - Multi-account AWS Organization (Management, Security, Production)
 - Centralized access via AWS IAM Identity Center (SSO)
 - Organization-wide CloudTrail (multi-region, encrypted, log validation enabled)
-- GuardDuty delegated administrator model
-- Dedicated Security account for monitoring
-- Minimal SCP preventing:
+- GuardDuty configured using the delegated administrator model
+- Dedicated Security account for monitoring and log isolation
+- Minimal but high-impact SCP enforcing:
   - organizations:LeaveOrganization
   - cloudtrail:StopLogging
   
 ### Continuous Compliance Validation (AWS Config)
 
-To enforce continuous governance validation, AWS Config was enabled with a scoped set of high-impact managed rules.
-
-Rather than enabling all available rules (which increases operational noise and cost), OrgShield focuses on foundational security posture validation.
+To prevent silent drift, I enabled AWS Config with a focused set of high-signal managed rules.
+Instead of enabling every available rule (which adds noise and cost), I selected only foundational controls that directly impact governance integrity.
 
 Selected managed rules include:
 
@@ -31,23 +31,23 @@ Selected managed rules include:
 
 This ensures:
 
-- Audit logging cannot drift from compliant state
+- Audit logging cannot be disabled unnoticed
 - Root account protections remain enforced
-- Storage encryption posture is continuously validated
-- Public exposure risks are detected automatically
+- Encryption posture stays compliant
+- Public exposure risks are continuously flagged
 
 
 ## Security Design Principles
 
 - Blast radius isolation
-- Centralized observability
+- Centralize observability and logging
 - Prevent → Detect → Validate model
-- Minimal high-impact guardrails
-- Cost-aware implementation
+- Use minimal but meaningful guardrails
+- Keep governance cost-efficient
 
 ## Security Validation Scenarios
 
-To validate the effectiveness of OrgShield controls, the following scenarios were tested:
+To verify that the controls were actually effective, I tested the following scenarios:
 
 ### 1. Attempted Organization Exit
 Test: Attempted to leave the AWS Organization from a member account.
@@ -67,14 +67,15 @@ Result: Finding centralized in Security account via delegated administrator mode
 
 ## Architecture Overview
 
-OrgShield implements a centralized control-plane security model across three AWS accounts:
+OrgShield follows a centralized control-plane security model across three accounts:
 
 - Management Account → Governance boundary & SCP enforcement
 - Security Account → Centralized logging, GuardDuty delegated admin, AWS Config validation
 - Production Account → Workload isolation governed by organization policies
 
-Audit logs flow to the Security account (S3 + KMS), GuardDuty findings aggregate centrally, and preventive SCP guardrails protect the control plane.
-
+CloudTrail logs flow into the Security account.
+GuardDuty findings aggregate centrally.
+SCP guardrails protect against control-plane tampering.
 
 ## Estimated Monthly Cost
 ~€3–6/month (low-traffic configuration)
