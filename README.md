@@ -65,8 +65,16 @@ Result: Flagged by AWS Config managed rules.
 Test: Triggered GuardDuty finding via suspicious activity simulation.
 Result: Finding centralized in Security account via delegated administrator model.
 
-## Diagram
-![Architecture Diagram](architecture.png)
+## Architecture Overview
+
+OrgShield implements a centralized control-plane security model across three AWS accounts:
+
+- Management Account → Governance boundary & SCP enforcement
+- Security Account → Centralized logging, GuardDuty delegated admin, AWS Config validation
+- Production Account → Workload isolation governed by organization policies
+
+Audit logs flow to the Security account (S3 + KMS), GuardDuty findings aggregate centrally, and preventive SCP guardrails protect the control plane.
+
 
 ## Estimated Monthly Cost
 ~€3–6/month (low-traffic configuration)
